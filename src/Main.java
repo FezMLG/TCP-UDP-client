@@ -12,6 +12,8 @@ public class Main {
 
     /**
      * twój adres ip, wpisz w konsoli cmd ipconfig i wklej tu swój adres ip
+     * poradnik jak znaleśc:
+     * https://www.med.unc.edu/it/guide/operating-systems/how-do-i-find-the-host-name-ip-address-or-physical-address-of-my-machine/
      */
     static String localAddress = "";
 
