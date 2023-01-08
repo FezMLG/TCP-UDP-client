@@ -35,6 +35,7 @@ public class Main {
                 ":" + tcpSocket.getPort());
 
         // sending ip:port
+        // zadanie 1
         String ipport = localAddress + ":" + udpSocket.getLocalPort();
         logReceive("Sending ip:port " + ipport);
         out.println(ipport);
