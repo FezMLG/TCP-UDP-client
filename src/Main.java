@@ -20,22 +20,22 @@ public class Main {
     public static void main(String[] args) throws IOException {
         //DO NOT TOUCH [START]
         //create socket udp
-        DatagramSocket socket = new DatagramSocket();
+        DatagramSocket udpSocket = new DatagramSocket();
 
         //create socket tcp
         logReceive("connecting to the server: " + SERVER_IP + ":" + PORT_TCP);
-        Socket clientSocket = new Socket(SERVER_IP, PORT_TCP);
-        PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+        Socket tcpSocket = new Socket(SERVER_IP, PORT_TCP);
+        PrintWriter out = new PrintWriter(tcpSocket.getOutputStream(), true);
 
         // sending first line handshake
         logReceive("Sending handshake " + HANDSHAKE);
         out.println(HANDSHAKE);
 
-        logReceive("Client connected from: " + clientSocket.getInetAddress().toString() +
-                ":" + clientSocket.getPort());
+        logReceive("Client connected from: " + tcpSocket.getInetAddress().toString() +
+                ":" + tcpSocket.getPort());
 
         // sending ip:port
-        String ipport = localAddress + ":" + socket.getLocalPort();
+        String ipport = localAddress + ":" + udpSocket.getLocalPort();
         logReceive("Sending ip:port " + ipport);
         out.println(ipport);
 
@@ -45,17 +45,17 @@ public class Main {
 
         //przykład
         //aby odebrać dane z serwera udp:
-        String data = receive(socket, packet);
+        String data = receive(udpSocket, packet);
 
         //aby wysłać dane do serwera udp:
         String toSend = "to send";
-        response(socket, packet, toSend);
+        response(udpSocket, packet, toSend);
 
         //DO NOT TOUCH [START]
         //closing socets
         logReceive("Client socket closing");
-        clientSocket.close();
-        socket.close();
+        tcpSocket.close();
+        udpSocket.close();
         logReceive("Ending");
         //DO NOT TOUCH [STOP]
     }
