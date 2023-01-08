@@ -3,13 +3,12 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 
 public class Main {
+    //flaga do wysłania do serwera tcp z zadania
+    private static final String HANDSHAKE = "187088";
     //adres ip serwera tcp w zadaniu
     public static String SERVER_IP = "172.21.48.7";
     //port serwera tcp w zadaniu
     public static int PORT_TCP = 15559;
-    //flaga do wysłania do serwera tcp z zadania
-    private static final String HANDSHAKE = "187088";
-
     /**
      * twój adres ip, wpisz w konsoli cmd ipconfig i wklej tu swój adres ip
      * poradnik jak znaleśc:
@@ -23,21 +22,19 @@ public class Main {
         DatagramSocket udpSocket = new DatagramSocket();
 
         //create socket tcp
-        logReceive("connecting to the server: " + SERVER_IP + ":" + PORT_TCP);
+        log("Connecting to the server: " + SERVER_IP + ":" + PORT_TCP);
         Socket tcpSocket = new Socket(SERVER_IP, PORT_TCP);
+        log("Client connected from: " + tcpSocket.getInetAddress().toString() + ":" + tcpSocket.getPort());
         PrintWriter out = new PrintWriter(tcpSocket.getOutputStream(), true);
 
         // sending first line handshake
-        logReceive("Sending handshake " + HANDSHAKE);
+        logSend("Handshake " + HANDSHAKE);
         out.println(HANDSHAKE);
-
-        logReceive("Client connected from: " + tcpSocket.getInetAddress().toString() +
-                ":" + tcpSocket.getPort());
 
         // sending ip:port
         // zadanie 1
         String ipport = localAddress + ":" + udpSocket.getLocalPort();
-        logReceive("Sending ip:port " + ipport);
+        logSend("ip:port " + ipport);
         out.println(ipport);
 
         byte[] buffer = new byte[1024];
@@ -61,10 +58,6 @@ public class Main {
         //DO NOT TOUCH [STOP]
     }
 
-    public static void logReceive(String message) {
-        System.out.println("[Receive]: " + message);
-    }
-
     //get from server
     public static String receive(DatagramSocket socket, DatagramPacket packet) throws IOException {
         socket.receive(packet);
@@ -84,5 +77,13 @@ public class Main {
 
     public static void logSend(String message) {
         System.out.println("[Send]: " + message);
+    }
+
+    public static void logReceive(String message) {
+        System.out.println("[Receive]: " + message);
+    }
+
+    public static void log(String message) {
+        System.out.println("[LOG]: " + message);
     }
 }
