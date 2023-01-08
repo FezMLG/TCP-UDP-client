@@ -51,10 +51,10 @@ public class Main {
 
         //DO NOT TOUCH [START]
         //closing socets
-        logReceive("Client socket closing");
+        log("Client socket closing");
         tcpSocket.close();
         udpSocket.close();
-        logReceive("Ending");
+        log("Ending");
         //DO NOT TOUCH [STOP]
     }
 
