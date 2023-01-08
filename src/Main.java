@@ -3,78 +3,83 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 
 public class Main {
-//    https://pastebin.com/raw/N21Tymr6
-// https://github.com/PatrykTopolski/tcp_baza/blob/master/src/main/java/ClientUdpTcp.java
+    //adres ip serwera tcp w zadaniu
+    public static String SERVER_IP = "172.21.48.7";
+    //port serwera tcp w zadaniu
+    public static int PORT_TCP = 15559;
+    //flaga do wysłania do serwera tcp z zadania
+    private static final String HANDSHAKE = "187088";
 
-    public static int PORT_TCP = 8089; //?
-    public static int PORT_UDP = 8090; //?
-    public static String SERVER_IP = "localhost";
-    private static final String HANDSHAKE = "3243423423423";
+    /**
+     * twój adres ip, wpisz w konsoli cmd ipconfig i wklej tu swój adres ip
+     */
+    static String localAddress = "";
 
     public static void main(String[] args) throws IOException {
+        //DO NOT TOUCH [START]
         //create socket udp
         DatagramSocket socket = new DatagramSocket();
 
         //create socket tcp
-        InetAddress serverIp = InetAddress.getByName(SERVER_IP); // DNS
-        log("IP address for server: " + serverIp.toString());
-        log("Client socket opening - connecting to the server");
-        Socket clientSocket = new Socket(serverIp, PORT_TCP);
-        log("Client connected from: " + clientSocket.getInetAddress().toString() +
-                ":" + clientSocket.getPort());
-        log("Streams collecting");
-
+        logReceive("connecting to the server: " + SERVER_IP + ":" + PORT_TCP);
+        Socket clientSocket = new Socket(SERVER_IP, PORT_TCP);
         PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
         // sending first line handshake
-        log("Sending handshake " + HANDSHAKE);
+        logReceive("Sending handshake " + HANDSHAKE);
         out.println(HANDSHAKE);
 
+        logReceive("Client connected from: " + clientSocket.getInetAddress().toString() +
+                ":" + clientSocket.getPort());
+
         // sending ip:port
-        String ipport = socket.getLocalAddress() + ":" + socket.getLocalPort();
-        log("Sending ip:port " + ipport);
+        String ipport = localAddress + ":" + socket.getLocalPort();
+        logReceive("Sending ip:port " + ipport);
         out.println(ipport);
 
-
-        // get first line from udp
         byte[] buffer = new byte[1024];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+        //DO NOT TOUCH [STOP]
 
-        // receive packet
-        socket.receive(packet);
+        //przykład
+        //aby odebrać dane z serwera udp:
+        String data = receive(socket, packet);
 
-        // get data from packet
-        byte[] data = packet.getData();
-        int length = packet.getLength();
-        String str = new String(data, StandardCharsets.UTF_8);
-        for (int i = 0; i < 7; i++) {
-            str = concatenate(str, str);
-        }
+        //aby wysłać dane do serwera udp:
+        String toSend = "to send";
+        response(socket, packet, toSend);
 
-        InetAddress address = packet.getAddress();
-        int port = packet.getPort();
-
-        // create response packet
-        DatagramPacket response = new DatagramPacket(str.getBytes(StandardCharsets.UTF_8), length, address, port);
-
-        // send response
-        socket.send(response);
-
+        //DO NOT TOUCH [START]
         //closing socets
-        log("Client socket closing");
+        logReceive("Client socket closing");
         clientSocket.close();
         socket.close();
-        log("Ending");
-
+        logReceive("Ending");
+        //DO NOT TOUCH [STOP]
     }
 
-    public static String concatenate(String str1, String str2) {
-        return str1 + str2;
+    public static void logReceive(String message) {
+        System.out.println("[Receive]: " + message);
     }
 
-    public static void log(String message) {
-        System.out.println("[S]: " + message);
-        System.out.flush();
+    //get from server
+    public static String receive(DatagramSocket socket, DatagramPacket packet) throws IOException {
+        socket.receive(packet);
+        String received = new String(packet.getData(), 0, packet.getLength());
+        logReceive(received.strip());
+        return received.strip();
+    }
+
+    //send response to server
+    public static void response(DatagramSocket socket, DatagramPacket packet, String toSend) throws IOException {
+        InetAddress address = packet.getAddress();
+        int port = packet.getPort();
+        DatagramPacket response = new DatagramPacket(toSend.getBytes(StandardCharsets.UTF_8), toSend.length(), address, port);
+        logSend(toSend);
+        socket.send(response);
+    }
+
+    public static void logSend(String message) {
+        System.out.println("[Send]: " + message);
     }
 }
